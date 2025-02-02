@@ -15,9 +15,11 @@ class Spike(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.Vector2(self.rect.topleft)
+        self.game = None  # Will be set when sprite is created
 
     def update(self, delta):
-        self.pos.x -= SCROLL_SPEED * delta
+        speed = self.game.current_speed if hasattr(self, 'game') and self.game else SCROLL_SPEED
+        self.pos.x -= speed * delta
         self.rect.x = self.pos.x
         if self.rect.right < 0:
             self.kill()
