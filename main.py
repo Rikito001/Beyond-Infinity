@@ -10,7 +10,7 @@ class Game:
     def __init__(self):
         pygame.init()
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("Infinite Tunnel Runner")
+        pygame.display.set_caption("Beyond Infinty")
         self.clock = pygame.time.Clock()
         self.state = 'start'
         self.running = True
@@ -47,17 +47,21 @@ class Game:
 
     def draw_start_screen(self):
         self.display_surface.fill((255, 255, 255))
-        title_text = "Tunnel Runner"
+        title_text = "Beyond Infinity"
         start_text = "Press SPACE to start"
+        exit_text = "Press ESC to exit"
 
         title_surface = self.font.render(title_text, True, (0, 0, 0))
         start_surface = self.font.render(start_text, True, (0, 0, 0))
+        exit_surface = self.font.render(exit_text, True, (0, 0, 0))
 
         title_rect = title_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
         start_rect = start_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3))
+        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 50))
 
         self.display_surface.blit(title_surface, title_rect)
         self.display_surface.blit(start_surface, start_rect)
+        self.display_surface.blit(exit_surface, exit_rect)
 
     def draw_game_over_screen(self):
         self.display_surface.fill((255, 255, 255))
@@ -71,9 +75,13 @@ class Game:
         menu = self.font.render('Press M to return to main menu', True, (0, 0, 0))
         menu_rect = menu.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 70))
 
+        exit_text = self.font.render('Press ESC to exit', True, (0, 0, 0))
+        exit_rect = exit_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 120))
+
         self.display_surface.blit(game_over, game_over_rect)
         self.display_surface.blit(restart, restart_rect)
         self.display_surface.blit(menu, menu_rect)
+        self.display_surface.blit(exit_text, exit_rect)
 
     def run(self):
         while self.running:
@@ -91,6 +99,8 @@ class Game:
                     elif event.key == pygame.K_m and self.state == 'game_over':
                         self.setup_game()
                         self.state = 'start'
+                    elif event.key == pygame.K_ESCAPE:
+                        self.running = False
 
             if self.state == 'start':
                 self.draw_start_screen()
