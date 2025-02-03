@@ -2,6 +2,8 @@ import pygame
 import sys
 import os
 from random import choice
+
+from high_score import HighScores
 from settings import *
 from player import Player
 from sprites import Spike
@@ -19,7 +21,7 @@ class Game:
         self.difficulty = 'easy'  # Default
         self.difficulty_options = ['easy', 'medium', 'hard']
         self.selected_difficulty = 0  # Difficulty index
-        self.background = pygame.image.load('background.jpg').convert()
+        self.background = pygame.image.load('Images/background.jpg').convert()
         self.background = pygame.transform.scale(self.background, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
         self.game_music = os.path.join('Sound', 'PixelRun.mp3')
@@ -29,6 +31,8 @@ class Game:
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1)
         self.current_music = self.menu_music
+
+        self.high_score = HighScores()
 
         self.setup_game()
 
@@ -149,6 +153,7 @@ class Game:
 
         title_text = "Beyond Infinity"
         start_text = "Press SPACE to select difficulty"
+        scores_text = "Press H to view high scores"
         credits_text = "Press C to open credits"
         exit_text = "Press ESC to exit"
 
@@ -156,16 +161,22 @@ class Game:
         start_surface = self.font.render(start_text, True, (0, 0, 0))
         exit_surface = self.font.render(exit_text, True, (0, 0, 0))
         credits_surface = self.font.render(credits_text, True, (0, 0, 0))
+        scores_surface = self.font.render(scores_text, True, (0, 0, 0))
 
         title_rect = title_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
         start_rect = start_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3))
         exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 100))
         credits_rect = credits_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 50))
+        scores_rect = scores_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 25))
 
         self.display_surface.blit(title_surface, title_rect)
         self.display_surface.blit(start_surface, start_rect)
         self.display_surface.blit(credits_surface, credits_rect)
+        self.display_surface.blit(scores_surface, scores_rect)
         self.display_surface.blit(exit_surface, exit_rect)
+
+    def check_high_score(self):
+        return self.high_score.update_score(self.difficulty, self.score)
 
     def draw_game_over_screen(self):
         self.display_surface.fill((0, 0, 0))
@@ -174,6 +185,11 @@ class Game:
         difficulty_text = self.font.render(f'Difficulty: {self.difficulty.title()}', True, (255, 255, 255))
         game_over_rect = game_over.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
         difficulty_rect = difficulty_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 100))
+
+        if self.check_high_score():
+            high_score_text = self.font.render('New High Score!', True, (255, 255, 0))
+            high_score_rect = high_score_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 150))
+            self.display_surface.blit(high_score_text, high_score_rect)
 
         restart = self.font.render('Press R to restart', True, (255, 255, 255))
         restart_rect = restart.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20))
@@ -190,6 +206,33 @@ class Game:
         self.display_surface.blit(menu, menu_rect)
         self.display_surface.blit(exit_text, exit_rect)
 
+    def draw_high_scores_screen(self):
+        self.display_surface.blit(self.background, (0, 0))
+
+        title_text = "High Scores"
+        easy_text = f"Easy: {self.high_score.get_score('easy')}"
+        medium_text = f"Medium: {self.high_score.get_score('medium')}"
+        hard_text = f"Hard: {self.high_score.get_score('hard')}"
+        back_text = "Press ESC: Back to Menu"
+
+        title_surface = self.font.render(title_text, True, (0, 0, 0))
+        easy_surface = self.font.render(easy_text, True, (0, 0, 0))
+        medium_surface = self.font.render(medium_text, True, (0, 0, 0))
+        hard_surface = self.font.render(hard_text, True, (0, 0, 0))
+        back_surface = self.font.render(back_text, True, (0, 0, 0))
+
+        title_rect = title_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
+        easy_rect = easy_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5))
+        medium_rect = medium_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5 + 50))
+        hard_rect = hard_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5 + 100))
+        back_rect = back_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5 + 200))
+
+        self.display_surface.blit(title_surface, title_rect)
+        self.display_surface.blit(easy_surface, easy_rect)
+        self.display_surface.blit(medium_surface, medium_rect)
+        self.display_surface.blit(hard_surface, hard_rect)
+        self.display_surface.blit(back_surface, back_rect)
+
     def run(self):
         while self.running:
             delta = self.clock.tick(60) / 1000
@@ -203,9 +246,14 @@ class Game:
                             self.state = 'difficulty'
                         elif event.key == pygame.K_c:
                             self.state = 'credits'
+                        elif event.key == pygame.K_h:
+                            self.state = 'high_scores'
                         elif event.key == pygame.K_ESCAPE:
                             self.running = False
                     elif self.state == 'credits':
+                        if event.key == pygame.K_ESCAPE:
+                            self.state = 'start'
+                    elif self.state == 'high_scores':
                         if event.key == pygame.K_ESCAPE:
                             self.state = 'start'
                     elif self.state == 'difficulty':
@@ -265,6 +313,8 @@ class Game:
                 self.draw_difficulty_screen()
             elif self.state == 'credits':
                 self.draw_credits_screen()
+            elif self.state == 'high_scores':
+                self.draw_high_scores_screen()
             elif self.state == 'playing':
                 if self.player.alive:
                     self.spawn_spikes(delta)
