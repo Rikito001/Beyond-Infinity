@@ -7,11 +7,9 @@ class Spike(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = pygame.Surface((SPIKE_SIZE, SPIKE_SIZE), pygame.SRCALPHA)
         if is_top:
-            pygame.draw.polygon(self.image, (0, 0, 0),
-                                [(SPIKE_SIZE // 2, SPIKE_SIZE), (SPIKE_SIZE, 0), (0, 0)])
+            pygame.draw.polygon(self.image, (0, 0, 0), [(SPIKE_SIZE // 2, SPIKE_SIZE), (SPIKE_SIZE, 0), (0, 0)])
         else:
-            pygame.draw.polygon(self.image, (0, 0, 0),
-                                [(SPIKE_SIZE // 2, 0), (SPIKE_SIZE, SPIKE_SIZE), (0, SPIKE_SIZE)])
+            pygame.draw.polygon(self.image, (0, 0, 0), [(SPIKE_SIZE // 2, 0), (SPIKE_SIZE, SPIKE_SIZE), (0, SPIKE_SIZE)])
 
         self.rect = self.image.get_rect(topleft=pos)
         self.pos = pygame.Vector2(self.rect.topleft)

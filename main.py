@@ -24,6 +24,12 @@ class Game:
         self.background = pygame.image.load('Images/background.jpg').convert()
         self.background = pygame.transform.scale(self.background, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
+        self.menu_options = ['play', 'scores', 'credits', 'exit']
+        self.selected_menu = 0  # Choice index
+
+        self.gameover_options = ['restart', 'menu', 'exit']
+        self.selected_gameover = 0  # Choice index
+
         self.game_music = os.path.join('Sound', 'PixelRun.mp3')
         self.menu_music = os.path.join('Sound', 'MenuCoffee.mp3')
         self.death_sound = pygame.mixer.Sound(os.path.join('Sound', 'DeathEffect.wav'))
@@ -149,22 +155,22 @@ class Game:
         self.display_surface.blit(self.background, (0, 0))
 
         title_text = "Beyond Infinity"
-        start_text = "Press SPACE to select difficulty"
-        scores_text = "Press H to view high scores"
-        credits_text = "Press C to open credits"
-        exit_text = "Press ESC to exit"
+        start_text = "Play"
+        scores_text = "High Scores"
+        credits_text = "Credits"
+        exit_text = "Exit (ESC)"
 
         title_surface = self.font.render(title_text, True, (0, 0, 0))
-        start_surface = self.font.render(start_text, True, (0, 0, 0))
-        scores_surface = self.font.render(scores_text, True, (0, 0, 0))
-        credits_surface = self.font.render(credits_text, True, (0, 0, 0))
-        exit_surface = self.font.render(exit_text, True, (0, 0, 0))
+        start_surface = self.font.render(start_text, True, (0, 255, 0) if self.menu_options[self.selected_menu] == 'play' else (0, 0, 0))
+        scores_surface = self.font.render(scores_text, True, (0, 255, 0) if self.menu_options[self.selected_menu] == 'scores' else (0, 0, 0))
+        credits_surface = self.font.render(credits_text, True, (0, 255, 0) if self.menu_options[self.selected_menu] == 'credits' else (0, 0, 0))
+        exit_surface = self.font.render(exit_text, True, (0, 255, 0) if self.menu_options[self.selected_menu] == 'exit' else (0, 0, 0))
 
-        title_rect = title_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
-        start_rect = start_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3))
-        scores_rect = scores_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 25))
-        credits_rect = credits_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 50))
-        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 100))
+        title_rect = title_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
+        start_rect = start_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5))
+        scores_rect = scores_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5 + 50))
+        credits_rect = credits_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5 + 100))
+        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5 + 200))
 
         self.display_surface.blit(title_surface, title_rect)
         self.display_surface.blit(start_surface, start_rect)
@@ -180,15 +186,15 @@ class Game:
 
         game_over_text = f'Game Over! Score: {int(self.score)}'
         difficulty_text = f'Difficulty: {self.difficulty.title()}'
-        restart_text = 'Press R to restart'
-        menu_text = 'Press M to return to main menu'
-        exit_text = 'Press ESC to exit'
+        restart_text = 'Restart'
+        menu_text = 'Main Menu'
+        exit_text = 'Exit (ESC)'
 
         game_over_surface = self.font.render(game_over_text, True, (255, 255, 255))
         difficulty_surface = self.font.render(difficulty_text, True, (255, 255, 255))
-        restart_surface = self.font.render(restart_text, True, (255, 255, 255))
-        menu_surface = self.font.render(menu_text, True, (255, 255, 255))
-        exit_surface = self.font.render(exit_text, True, (255, 255, 255))
+        restart_surface = self.font.render(restart_text, True, (0, 255, 0) if self.gameover_options[self.selected_gameover] == 'restart' else (255, 255, 255))
+        menu_surface = self.font.render(menu_text, True, (0, 255, 0) if self.gameover_options[self.selected_gameover] == 'menu' else (255, 255, 255))
+        exit_surface = self.font.render(exit_text, True, (0, 255, 0) if self.gameover_options[self.selected_gameover] == 'exit' else (255, 255, 255))
 
         game_over_rect = game_over_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
         difficulty_rect = difficulty_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 100))
@@ -244,12 +250,19 @@ class Game:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
                     if self.state == 'start':
-                        if event.key == pygame.K_SPACE:
-                            self.state = 'difficulty'
-                        elif event.key == pygame.K_c:
-                            self.state = 'credits'
-                        elif event.key == pygame.K_h:
-                            self.state = 'high_scores'
+                        if event.key == pygame.K_UP:
+                            self.selected_menu = (self.selected_menu - 1) % len(self.menu_options)
+                        elif event.key == pygame.K_DOWN:
+                            self.selected_menu = (self.selected_menu + 1) % len(self.menu_options)
+                        elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                            if self.menu_options[self.selected_menu] == 'play':
+                                self.state = 'difficulty'
+                            elif self.menu_options[self.selected_menu] == 'scores':
+                                self.state = 'high_scores'
+                            elif self.menu_options[self.selected_menu] == 'credits':
+                                self.state = 'credits'
+                            elif self.menu_options[self.selected_menu] == 'exit':
+                                self.running = False
                         elif event.key == pygame.K_ESCAPE:
                             self.running = False
                     elif self.state == 'credits':
@@ -265,7 +278,7 @@ class Game:
                         elif event.key == pygame.K_DOWN:
                             self.selected_difficulty = (self.selected_difficulty + 1) % len(self.difficulty_options)
                             self.difficulty = self.difficulty_options[self.selected_difficulty]
-                        elif event.key == pygame.K_SPACE:
+                        elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                             self.state = 'playing'
                             self.setup_game()
                             # Game music
@@ -283,24 +296,31 @@ class Game:
                                 pygame.mixer.music.play(-1)
                                 self.current_music = self.menu_music
                     elif self.state == 'game_over':
-                        if event.key == pygame.K_r:
-                            self.setup_game()
-                            self.state = 'playing'
-                            # Game music
-                            if self.current_music != self.game_music:
-                                pygame.mixer.music.stop()
-                                pygame.mixer.music.load(self.game_music)
-                                pygame.mixer.music.play(-1)
-                                self.current_music = self.game_music
-                        elif event.key == pygame.K_m:
-                            self.setup_game()
-                            self.state = 'start'
-                            # Menu music
-                            if self.current_music != self.menu_music:
-                                pygame.mixer.music.stop()
-                                pygame.mixer.music.load(self.menu_music)
-                                pygame.mixer.music.play(-1)
-                                self.current_music = self.menu_music
+                        if event.key == pygame.K_UP:
+                            self.selected_gameover = (self.selected_gameover - 1) % len(self.gameover_options)
+                        elif event.key == pygame.K_DOWN:
+                            self.selected_gameover = (self.selected_gameover + 1) % len(self.gameover_options)
+                        elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                            if self.gameover_options[self.selected_gameover] == 'restart':
+                                self.setup_game()
+                                self.state = 'playing'
+                                # Game music
+                                if self.current_music != self.game_music:
+                                    pygame.mixer.music.stop()
+                                    pygame.mixer.music.load(self.game_music)
+                                    pygame.mixer.music.play(-1)
+                                    self.current_music = self.game_music
+                            elif self.gameover_options[self.selected_gameover] == 'menu':
+                                self.setup_game()
+                                self.state = 'start'
+                                # Menu music
+                                if self.current_music != self.menu_music:
+                                    pygame.mixer.music.stop()
+                                    pygame.mixer.music.load(self.menu_music)
+                                    pygame.mixer.music.play(-1)
+                                    self.current_music = self.menu_music
+                            elif self.gameover_options[self.selected_gameover] == 'exit':
+                                self.running = False
                         elif event.key == pygame.K_ESCAPE:
                             self.running = False
 
@@ -336,14 +356,17 @@ class Game:
                     score_text = self.font.render(f'Score: {int(self.score)}', True, (255, 255, 255))
                     speed_text = self.font.render(f'Speed: {speed_multiplier:.2f}x', True, (255, 255, 255))
                     difficulty_text = self.font.render(f'Difficulty: {self.difficulty.title()}', True, (255, 255, 255))
+                    high_score_text = self.font.render(f'High Score: {self.high_score.get_score(self.difficulty)}', True, (255, 255, 255))
 
-                    speed_rect = speed_text.get_rect(center=(WINDOW_WIDTH // 2 - 150, 150))
-                    score_rect = score_text.get_rect(center=(WINDOW_WIDTH // 2 + 150, 150))
-                    difficulty_rect = difficulty_text.get_rect(center=(WINDOW_WIDTH // 2, 100))
+                    speed_rect = speed_text.get_rect(center=(WINDOW_WIDTH // 2 - 150, 120))
+                    score_rect = score_text.get_rect(center=(WINDOW_WIDTH // 2 + 150, 120))
+                    difficulty_rect = difficulty_text.get_rect(center=(WINDOW_WIDTH // 2 - 150, 90))
+                    high_score_rect = high_score_text.get_rect(center=(WINDOW_WIDTH // 2 + 150, 90))
 
                     self.display_surface.blit(speed_text, speed_rect)
                     self.display_surface.blit(score_text, score_rect)
                     self.display_surface.blit(difficulty_text, difficulty_rect)
+                    self.display_surface.blit(high_score_text, high_score_rect)
             elif self.state == 'game_over':
                 self.draw_game_over_screen()
 
@@ -356,3 +379,4 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     game.run()
+    
