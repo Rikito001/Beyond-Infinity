@@ -125,12 +125,9 @@ class Game:
         start_text = "Press SPACE to start"
 
         title_surface = self.font.render(title_text, True, (0, 0, 0))
-        easy_surface = self.font.render(easy_text, True,
-                                        (0, 255, 0) if self.difficulty == 'easy' else (0, 0, 0))
-        medium_surface = self.font.render(medium_text, True,
-                                          (0, 255, 0) if self.difficulty == 'medium' else (0, 0, 0))
-        hard_surface = self.font.render(hard_text, True,
-                                        (0, 255, 0) if self.difficulty == 'hard' else (0, 0, 0))
+        easy_surface = self.font.render(easy_text, True, (0, 255, 0) if self.difficulty == 'easy' else (0, 0, 0))
+        medium_surface = self.font.render(medium_text, True, (0, 255, 0) if self.difficulty == 'medium' else (0, 0, 0))
+        hard_surface = self.font.render(hard_text, True, (0, 255, 0) if self.difficulty == 'hard' else (0, 0, 0))
         back_surface = self.font.render(back_text, True, (0, 0, 0))
         start_surface = self.font.render(start_text, True, (0, 0, 0))
 
@@ -159,20 +156,20 @@ class Game:
 
         title_surface = self.font.render(title_text, True, (0, 0, 0))
         start_surface = self.font.render(start_text, True, (0, 0, 0))
-        exit_surface = self.font.render(exit_text, True, (0, 0, 0))
-        credits_surface = self.font.render(credits_text, True, (0, 0, 0))
         scores_surface = self.font.render(scores_text, True, (0, 0, 0))
+        credits_surface = self.font.render(credits_text, True, (0, 0, 0))
+        exit_surface = self.font.render(exit_text, True, (0, 0, 0))
 
         title_rect = title_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
         start_rect = start_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3))
-        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 100))
-        credits_rect = credits_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 50))
         scores_rect = scores_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 25))
+        credits_rect = credits_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 50))
+        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 100))
 
         self.display_surface.blit(title_surface, title_rect)
         self.display_surface.blit(start_surface, start_rect)
-        self.display_surface.blit(credits_surface, credits_rect)
         self.display_surface.blit(scores_surface, scores_rect)
+        self.display_surface.blit(credits_surface, credits_rect)
         self.display_surface.blit(exit_surface, exit_rect)
 
     def check_high_score(self):
@@ -181,30 +178,35 @@ class Game:
     def draw_game_over_screen(self):
         self.display_surface.fill((0, 0, 0))
 
-        game_over = self.font.render(f'Game Over! Score: {int(self.score)}', True, (255, 255, 255))
-        difficulty_text = self.font.render(f'Difficulty: {self.difficulty.title()}', True, (255, 255, 255))
-        game_over_rect = game_over.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
-        difficulty_rect = difficulty_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 100))
+        game_over_text = f'Game Over! Score: {int(self.score)}'
+        difficulty_text = f'Difficulty: {self.difficulty.title()}'
+        restart_text = 'Press R to restart'
+        menu_text = 'Press M to return to main menu'
+        exit_text = 'Press ESC to exit'
+
+        game_over_surface = self.font.render(game_over_text, True, (255, 255, 255))
+        difficulty_surface = self.font.render(difficulty_text, True, (255, 255, 255))
+        restart_surface = self.font.render(restart_text, True, (255, 255, 255))
+        menu_surface = self.font.render(menu_text, True, (255, 255, 255))
+        exit_surface = self.font.render(exit_text, True, (255, 255, 255))
+
+        game_over_rect = game_over_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
+        difficulty_rect = difficulty_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 100))
+        restart_rect = restart_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20))
+        menu_rect = menu_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 70))
+        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 120))
 
         if self.check_high_score():
-            high_score_text = self.font.render('New High Score!', True, (255, 255, 0))
-            high_score_rect = high_score_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 150))
-            self.display_surface.blit(high_score_text, high_score_rect)
+            high_score_text = "New High Score!"
+            high_score_surface = self.font.render(high_score_text, True, (255, 255, 0))
+            high_score_rect = high_score_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 150))
+            self.display_surface.blit(high_score_surface, high_score_rect)
 
-        restart = self.font.render('Press R to restart', True, (255, 255, 255))
-        restart_rect = restart.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 20))
-
-        menu = self.font.render('Press M to return to main menu', True, (255, 255, 255))
-        menu_rect = menu.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 70))
-
-        exit_text = self.font.render('Press ESC to exit', True, (255, 255, 255))
-        exit_rect = exit_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 120))
-
-        self.display_surface.blit(game_over, game_over_rect)
-        self.display_surface.blit(difficulty_text, difficulty_rect)
-        self.display_surface.blit(restart, restart_rect)
-        self.display_surface.blit(menu, menu_rect)
-        self.display_surface.blit(exit_text, exit_rect)
+        self.display_surface.blit(game_over_surface, game_over_rect)
+        self.display_surface.blit(difficulty_surface, difficulty_rect)
+        self.display_surface.blit(restart_surface, restart_rect)
+        self.display_surface.blit(menu_surface, menu_rect)
+        self.display_surface.blit(exit_surface, exit_rect)
 
     def draw_high_scores_screen(self):
         self.display_surface.blit(self.background, (0, 0))
