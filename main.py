@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 from random import choice
 from settings import *
 from player import Player
@@ -9,6 +10,7 @@ from sprites import Spike
 class Game:
     def __init__(self):
         pygame.init()
+        pygame.mixer.init()
         self.display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption("Beyond Infinity")
         self.clock = pygame.time.Clock()
@@ -19,6 +21,15 @@ class Game:
         self.selected_difficulty = 0  # Difficulty index
         self.background = pygame.image.load('background.jpg').convert()
         self.background = pygame.transform.scale(self.background, (WINDOW_WIDTH, WINDOW_HEIGHT))
+
+        self.game_music = os.path.join('Sound', 'PixelRun.mp3')
+        self.menu_music = os.path.join('Sound', 'MenuCoffee.mp3')
+        self.death_sound = pygame.mixer.Sound(os.path.join('Sound', 'DeathEffect.wav'))
+        pygame.mixer.music.load(self.menu_music)
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play(-1)
+        self.current_music = self.menu_music
+
         self.setup_game()
 
     def setup_game(self):
@@ -57,6 +68,10 @@ class Game:
         if pygame.sprite.spritecollide(self.player, self.spike_sprites, False):
             self.player.alive = False
             self.state = 'game_over'
+            # Stop music on game over
+            pygame.mixer.music.stop()
+            self.death_sound.play()
+            self.current_music = None
             return True
         return False
 
@@ -72,18 +87,28 @@ class Game:
         pygame.draw.line(self.display_surface, (0, 0, 0), (0, TUNNEL_TOP), (WINDOW_WIDTH, TUNNEL_TOP), 2)
         pygame.draw.line(self.display_surface, (0, 0, 0), (0, TUNNEL_BOTTOM), (WINDOW_WIDTH, TUNNEL_BOTTOM), 2)
 
-        if self.difficulty == 'easy':
-            self.speed_multiplier = 1.0
-            self.score_multiplier = 1.0
-        elif self.difficulty == 'medium':
-            self.speed_multiplier = 1.5
-            self.score_multiplier = 1.5
-        else:
-            self.speed_multiplier = 1.7
-            self.score_multiplier = 1.7
+    def draw_credits_screen(self):
+        self.display_surface.blit(self.background, (0, 0))
 
-        self.current_speed = SCROLL_SPEED * self.speed_multiplier
-        self.last_speed_increase = 0
+        credits_text = "Credits"
+        github_text = "https://github.com/Rikito001"
+        website_text = "rikito.eu"
+        exit_text = "Press ESC: Back to Menu"
+
+        credits_surface = self.font.render(credits_text, True, (0, 0, 0))
+        github_surface = self.font.render(github_text, True, (0, 0, 0))
+        website_surface = self.font.render(website_text, True, (0, 0, 0))
+        exit_surface = self.font.render(exit_text, True, (0, 0, 0))
+
+        credits_rect = credits_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
+        github_rect = github_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5))
+        website_rect = website_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5 + 50))
+        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 5 + 150))
+
+        self.display_surface.blit(credits_surface, credits_rect)
+        self.display_surface.blit(github_surface, github_rect)
+        self.display_surface.blit(website_surface, website_rect)
+        self.display_surface.blit(exit_surface, exit_rect)
 
     def draw_difficulty_screen(self):
         self.display_surface.blit(self.background, (0, 0))
@@ -122,21 +147,24 @@ class Game:
     def draw_start_screen(self):
         self.display_surface.blit(self.background, (0, 0))
 
-
         title_text = "Beyond Infinity"
         start_text = "Press SPACE to select difficulty"
+        credits_text = "Press C to open credits"
         exit_text = "Press ESC to exit"
 
         title_surface = self.font.render(title_text, True, (0, 0, 0))
         start_surface = self.font.render(start_text, True, (0, 0, 0))
         exit_surface = self.font.render(exit_text, True, (0, 0, 0))
+        credits_surface = self.font.render(credits_text, True, (0, 0, 0))
 
         title_rect = title_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
         start_rect = start_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3))
-        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 50))
+        exit_rect = exit_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 100))
+        credits_rect = credits_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT * 2 // 3 + 50))
 
         self.display_surface.blit(title_surface, title_rect)
         self.display_surface.blit(start_surface, start_rect)
+        self.display_surface.blit(credits_surface, credits_rect)
         self.display_surface.blit(exit_surface, exit_rect)
 
     def draw_game_over_screen(self):
@@ -173,8 +201,13 @@ class Game:
                     if self.state == 'start':
                         if event.key == pygame.K_SPACE:
                             self.state = 'difficulty'
+                        elif event.key == pygame.K_c:
+                            self.state = 'credits'
                         elif event.key == pygame.K_ESCAPE:
                             self.running = False
+                    elif self.state == 'credits':
+                        if event.key == pygame.K_ESCAPE:
+                            self.state = 'start'
                     elif self.state == 'difficulty':
                         if event.key == pygame.K_UP:
                             self.selected_difficulty = (self.selected_difficulty - 1) % len(self.difficulty_options)
@@ -185,22 +218,53 @@ class Game:
                         elif event.key == pygame.K_SPACE:
                             self.state = 'playing'
                             self.setup_game()
+                            # Game music
+                            if self.current_music != self.game_music:
+                                pygame.mixer.music.stop()
+                                pygame.mixer.music.load(self.game_music)
+                                pygame.mixer.music.play(-1)
+                                self.current_music = self.game_music
                         elif event.key == pygame.K_ESCAPE:
                             self.state = 'start'
+                            # Menu music
+                            if self.current_music != self.menu_music:
+                                pygame.mixer.music.stop()
+                                pygame.mixer.music.load(self.menu_music)
+                                pygame.mixer.music.play(-1)
+                                self.current_music = self.menu_music
                     elif self.state == 'game_over':
                         if event.key == pygame.K_r:
                             self.setup_game()
                             self.state = 'playing'
+                            # Game music
+                            if self.current_music != self.game_music:
+                                pygame.mixer.music.stop()
+                                pygame.mixer.music.load(self.game_music)
+                                pygame.mixer.music.play(-1)
+                                self.current_music = self.game_music
                         elif event.key == pygame.K_m:
                             self.setup_game()
                             self.state = 'start'
+                            # Menu music
+                            if self.current_music != self.menu_music:
+                                pygame.mixer.music.stop()
+                                pygame.mixer.music.load(self.menu_music)
+                                pygame.mixer.music.play(-1)
+                                self.current_music = self.menu_music
                         elif event.key == pygame.K_ESCAPE:
                             self.running = False
 
             if self.state == 'start':
+                if self.current_music != self.menu_music:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.load(self.menu_music)
+                    pygame.mixer.music.play(-1)
+                    self.current_music = self.menu_music
                 self.draw_start_screen()
             elif self.state == 'difficulty':
                 self.draw_difficulty_screen()
+            elif self.state == 'credits':
+                self.draw_credits_screen()
             elif self.state == 'playing':
                 if self.player.alive:
                     self.spawn_spikes(delta)
@@ -216,14 +280,18 @@ class Game:
                     self.draw_tunnel()
                     self.all_sprites.draw(self.display_surface)
 
-                    score_text = self.font.render(f'Score: {int(self.score)}', True, (255, 255, 255))
-                    self.display_surface.blit(score_text, (10, 10))
-
                     speed_multiplier = self.current_speed / SCROLL_SPEED
+                    score_text = self.font.render(f'Score: {int(self.score)}', True, (255, 255, 255))
                     speed_text = self.font.render(f'Speed: {speed_multiplier:.2f}x', True, (255, 255, 255))
                     difficulty_text = self.font.render(f'Difficulty: {self.difficulty.title()}', True, (255, 255, 255))
-                    self.display_surface.blit(speed_text, (10, 50))
-                    self.display_surface.blit(difficulty_text, (10, 90))
+
+                    speed_rect = speed_text.get_rect(center=(WINDOW_WIDTH // 2 - 150, 150))
+                    score_rect = score_text.get_rect(center=(WINDOW_WIDTH // 2 + 150, 150))
+                    difficulty_rect = difficulty_text.get_rect(center=(WINDOW_WIDTH // 2, 100))
+
+                    self.display_surface.blit(speed_text, speed_rect)
+                    self.display_surface.blit(score_text, score_rect)
+                    self.display_surface.blit(difficulty_text, difficulty_rect)
             elif self.state == 'game_over':
                 self.draw_game_over_screen()
 

@@ -32,6 +32,13 @@ class Player(pygame.sprite.Sprite):
         self.pos.x = self.initial_x
         self.rect.center = self.pos
 
+        if self.rect.top <= TUNNEL_TOP or self.rect.bottom >= TUNNEL_BOTTOM:
+            self.alive = False
+            self.game.state = 'game_over'
+            pygame.mixer.music.stop()
+            self.game.death_sound.play()
+            self.game.current_music = None
+
     def update(self, delta):
         self.input()
         self.move(delta)
