@@ -2,8 +2,9 @@ import pygame
 from settings import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, groups):
+    def __init__(self, groups, game):
         super().__init__(groups)
+        self.game = game
         self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE), pygame.SRCALPHA)
         pygame.draw.polygon(self.image, (0, 0, 0), [(0, PLAYER_SIZE), (PLAYER_SIZE, PLAYER_SIZE / 2), (0, 0)])
         self.rect = self.image.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
@@ -25,7 +26,9 @@ class Player(pygame.sprite.Sprite):
             self.space_pressed = False
 
     def move(self, delta):
-        self.pos.y += self.direction.y * SCROLL_SPEED * delta
+        # Vertical movement with game speed
+        movement_speed = SCROLL_SPEED * self.game.speed_multiplier - 50
+        self.pos.y += self.direction.y * movement_speed * delta
         self.pos.x = self.initial_x
         self.rect.center = self.pos
 
