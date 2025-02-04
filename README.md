@@ -65,6 +65,7 @@ The players character moves up and down, and the goal is not to hit a spike obst
 ## **3. Art**
 
 ### **3.1 Theme Interpretation (One level, but constantly changing)**
+Game is focused on a 2D map and objects with simple design that is also good on the performance side as it doesnt require extra loading of images, or images at all as they take up more storage, making the game less optimized.
 
 <p align="center">
   <img src="N/A" alt="Player">
@@ -79,3 +80,24 @@ The game tries to keep a simplistic, slightly retro look. There are no assets us
   <br>
   <em>Figure 4 Level design concept</em>
 </p>
+
+---
+## **4. Audio**
+
+### **4.1 Music**
+The selection of background music was focused on a fast paced pixel-like theme as the game has a retro feel to itself (https://pixabay.com/music/drum-n-bass-pixel-run-206007/). The menu music is a slower and calmer soundtrack that makes sure the player experience starts already in the menu while not being too loud or fast (https://pixabay.com/music/pulses-coffee-with-sugar-background-music-by-alienightmare-237715/)
+
+### **4.2 Sound Efects**
+The sounds effects in this game maintain a pixel/8-bit feel and were made using sxfr sound effect maker.
+
+---
+## **5. Game Experience**
+
+### **5.1 UI**
+The user interface will be oriented towards the overall graphic style and the start screen will include the option to start and exit the game or view the highscore or developer credits.
+
+### **5.2 Controls**
+<ins>**Keyboard**</ins>
+- **Arrows UP and DOWN**: selection in menu.
+- **Space**: player movement up and down.
+- **Escape**: return to menu/game exit
