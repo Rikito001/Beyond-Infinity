@@ -16,7 +16,7 @@ The proposed game serves as a demonstration for the subject Object Technologies,
 Geometrydash is a "side-scrolling platforming" multiplatform game which has the player jump over obstacles in multiple levels often created by the fan-base and not just original game developer. The levels are often, if not always, based off fast-paced songs and the obstacles are placed exactly in a way that makes the player jump over them in the beat of given song. The faster the song, the harder and faster is the level, which also requires more skill.
 
 <p align="center">
-  <img src="N/A" alt="Geometrydash">
+  <img src="https://github.com/Rikito001/Beyond-Infinity/blob/main/Images/geometrydash.jpg" alt="Geometrydash">
   <br>
   <em>Figure 1 Preview of Geometrydash</em>
 </p>
@@ -26,7 +26,7 @@ Geometrydash is a "side-scrolling platforming" multiplatform game which has the 
 Gold Rush is one of many minigames in a mobile game called Fancade. Its a fan-made game (Fancade is an app for simple game making and publishing) which includes one level that changes constantly. The player takes control of a ball-like character that jumps between two static walls and with each touch of a wall, spikes appear or change their position on the given wall. The game continues till the player touches one of the spikes or either top or bottom of the vertical tunnel (the two static walls). The player can also collect coins with which upgrades can be bought, such as an extra life or slower speed, giving the player more time to decide his moves. 
 
 <p align="center">
-  <img src="N/A" alt="Gold Rush">
+  <img src="https://github.com/Rikito001/Beyond-Infinity/blob/main/Images/GoldRush.jpg" alt="Gold Rush">
   <br>
   <em>Figure 2 Preview of Gold Rush</em>
 </p>
@@ -68,7 +68,7 @@ The players character moves up and down, and the goal is not to hit a spike obst
 Game is focused on a 2D map and objects with simple design that is also good on the performance side as it doesnt require extra loading of images, or images at all as they take up more storage, making the game less optimized.
 
 <p align="center">
-  <img src="N/A" alt="Player">
+  <img src="https://github.com/Rikito001/Beyond-Infinity/blob/main/Images/PlayerPreview.png" alt="Player">
   <br>
   <em>Figure 3 Preview of player character</em>
 </p>
@@ -76,7 +76,7 @@ Game is focused on a 2D map and objects with simple design that is also good on 
 ### **3.2 Design**
 The game tries to keep a simplistic, slightly retro look. There are no assets used as both the player and the obstacles/spikes are directly drawn using the code. The interface is minimalistic, and while the player is in the game there are stats carefully placed in a way that they still can be checked while avoiding spikes.
 <p align="center">
-  <img src="N/A" alt="Level design">
+  <img src="https://github.com/Rikito001/Beyond-Infinity/blob/main/Images/LevelPreview.png" alt="Level design">
   <br>
   <em>Figure 4 Level design concept</em>
 </p>
