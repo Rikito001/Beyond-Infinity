@@ -6,8 +6,11 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, groups, game):
         super().__init__(groups)
         self.game = game
-        self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE), pygame.SRCALPHA)
-        pygame.draw.polygon(self.image, (0, 0, 0), [(0, PLAYER_SIZE), (PLAYER_SIZE, PLAYER_SIZE / 2), (0, 0)])
+
+        self.original_image = pygame.image.load('Images/Ship.png').convert_alpha()
+        self.original_image = pygame.transform.scale(self.original_image, (PLAYER_SIZE, PLAYER_SIZE))
+        self.image = self.original_image
+
         self.rect = self.image.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
         self.pos = pygame.Vector2(self.rect.center)
         self.initial_x = self.pos.x
@@ -16,6 +19,8 @@ class Player(pygame.sprite.Sprite):
         self.space_pressed = False
         self.alive = True
 
+        self.current_angle = -45
+
     def input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and not self.space_pressed:
@@ -23,6 +28,11 @@ class Player(pygame.sprite.Sprite):
             self.going_up = not self.going_up
             self.direction.y = -1 if self.going_up else 1
             self.direction = self.direction.normalize()
+
+            self.current_angle = -45 if self.going_up else -135
+            self.image = pygame.transform.rotate(self.original_image, self.current_angle)
+            self.rect = self.image.get_rect(center=self.rect.center)
+
         elif not keys[pygame.K_SPACE]:
             self.space_pressed = False
 
