@@ -65,7 +65,7 @@ The players character moves up and down, and the goal is not to hit a spike obst
 ## **3. Art**
 
 ### **3.1 Theme Interpretation (One level, but constantly changing)**
-Game is focused on a 2D map and objects with simple design that is also good on the performance side as it doesnt require extra loading of images, or images at all as they take up more storage, making the game less optimized.
+Game is focused on a 2D map and objects with simple pixel design. Spikes are simply generated using a function, while the player's character, a spaceship, and it's engines are pixel sprites with simple animations.
 
 <p align="center">
   <img src="https://github.com/Rikito001/Beyond-Infinity/blob/main/Images/PlayerPreview.png" alt="Player">
@@ -74,7 +74,7 @@ Game is focused on a 2D map and objects with simple design that is also good on 
 </p>
 
 ### **3.2 Design**
-The game tries to keep a simplistic, slightly retro look. There are no assets used as both the player and the obstacles/spikes are directly drawn using the code. The interface is minimalistic, and while the player is in the game there are stats carefully placed in a way that they still can be checked while avoiding spikes.
+The game tries to keep a simplistic, slightly retro look. The interface is minimalistic, and while the player is in the game there are stats carefully placed in a way that they still can be checked while avoiding spikes. No assets were used for the spikes and both player and engine effects are from itch.io (https://foozlecc.itch.io/void-main-ship).
 <p align="center">
   <img src="https://github.com/Rikito001/Beyond-Infinity/blob/main/Images/LevelPreview.png" alt="Level design">
   <br>
