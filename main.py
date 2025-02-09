@@ -75,14 +75,14 @@ class Game:
             self.next_spawn = SEGMENT_WIDTH
 
     def check_collisions(self):
-        if pygame.sprite.spritecollide(self.player, self.spike_sprites, False):
-            self.player.alive = False
-            self.state = 'game_over'
-            # Stop music on game over
-            pygame.mixer.music.stop()
-            self.death_sound.play()
-            self.current_music = None
-            return True
+        for spike in self.spike_sprites:
+            if self.player.get_collision_rect().colliderect(spike.rect):
+                self.player.alive = False
+                self.state = 'game_over'
+                pygame.mixer.music.stop()
+                self.death_sound.play()
+                self.current_music = None
+                return True
         return False
 
     def draw_tunnel(self):
