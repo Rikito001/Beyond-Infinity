@@ -24,6 +24,10 @@ class Game:
         self.background = pygame.image.load('Images/background.jpg').convert()
         self.background = pygame.transform.scale(self.background, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
+        self.countdown_font = pygame.font.Font(None, 72)  # Larger font for countdown
+        self.countdown_time = 4  # 3 seconds countdown
+        self.countdown_active = False
+
         self.menu_options = ['play', 'scores', 'credits', 'exit']
         self.selected_menu = 0  # Choice index
 
@@ -51,6 +55,9 @@ class Game:
         self.score = 0
         self.font = pygame.font.Font(None, 36)
 
+        self.countdown_time = 4
+        self.countdown_active = True
+
         if self.difficulty == 'easy':
             self.speed_multiplier = 1.0
             self.score_multiplier = 1.0
@@ -64,6 +71,34 @@ class Game:
         self.current_speed = SCROLL_SPEED * self.speed_multiplier
         self.last_speed_increase = 0
 
+    def update_countdown(self, delta):
+        if self.countdown_active:
+            self.countdown_time -= delta
+            if self.countdown_time <= 0:
+                self.countdown_active = False
+                self.countdown_time = 0
+
+    def draw_countdown(self):
+        if self.countdown_active:
+            if self.countdown_time <= 1:
+                countdown_text = "GO!"
+            else:
+                countdown_text = str(int(self.countdown_time))
+
+            text_surface = self.countdown_font.render(countdown_text, True, (255, 0, 0))
+            text_rect = text_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+
+            padding = 20
+            bg_rect = pygame.Rect(
+                text_rect.left - padding,
+                text_rect.top - padding,
+                text_rect.width + (padding * 2),
+                text_rect.height + (padding * 2)
+            )
+            pygame.draw.rect(self.display_surface, (255, 255, 255), bg_rect)
+            pygame.draw.rect(self.display_surface, (0, 0, 0), bg_rect, 2)
+
+            self.display_surface.blit(text_surface, text_rect)
     def spawn_spikes(self, delta):
         self.next_spawn -= self.current_speed * delta
         if self.next_spawn <= 0:
@@ -339,15 +374,18 @@ class Game:
                 self.draw_high_scores_screen()
             elif self.state == 'playing':
                 if self.player.alive:
-                    self.spawn_spikes(delta)
-                    self.all_sprites.update(delta)
-                    self.check_collisions()
-                    self.score += delta * 10 * self.score_multiplier
+                    if self.countdown_active:
+                        self.update_countdown(delta)
+                    else:
+                        self.spawn_spikes(delta)
+                        self.all_sprites.update(delta)
+                        self.check_collisions()
+                        self.score += delta * 10 * self.score_multiplier
 
-                    current_hundred = (int(self.score) // 100) * 100
-                    if current_hundred > self.last_speed_increase:
-                        self.current_speed *= 1.05  # 5%
-                        self.last_speed_increase = current_hundred
+                        current_hundred = (int(self.score) // 100) * 100
+                        if current_hundred > self.last_speed_increase:
+                            self.current_speed *= 1.05  # 5%
+                            self.last_speed_increase = current_hundred
 
                     self.draw_tunnel()
                     self.all_sprites.draw(self.display_surface)
@@ -356,7 +394,8 @@ class Game:
                     score_text = self.font.render(f'Score: {int(self.score)}', True, (255, 255, 255))
                     speed_text = self.font.render(f'Speed: {speed_multiplier:.2f}x', True, (255, 255, 255))
                     difficulty_text = self.font.render(f'Difficulty: {self.difficulty.title()}', True, (255, 255, 255))
-                    high_score_text = self.font.render(f'High Score: {self.high_score.get_score(self.difficulty)}', True, (255, 255, 255))
+                    high_score_text = self.font.render(f'High Score: {self.high_score.get_score(self.difficulty)}',
+                                                       True, (255, 255, 255))
 
                     speed_rect = speed_text.get_rect(center=(WINDOW_WIDTH // 2 - 150, 120))
                     score_rect = score_text.get_rect(center=(WINDOW_WIDTH // 2 + 150, 120))
@@ -367,6 +406,9 @@ class Game:
                     self.display_surface.blit(score_text, score_rect)
                     self.display_surface.blit(difficulty_text, difficulty_rect)
                     self.display_surface.blit(high_score_text, high_score_rect)
+
+                    if self.countdown_active:
+                        self.draw_countdown()
             elif self.state == 'game_over':
                 self.draw_game_over_screen()
 

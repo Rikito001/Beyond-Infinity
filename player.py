@@ -43,7 +43,7 @@ class Player(pygame.sprite.Sprite):
         self.space_pressed = False
         self.alive = True
 
-        self.current_angle = -45
+        self.current_angle = -135
         self.update_combined_image()
 
     def update_combined_image(self):
@@ -110,8 +110,10 @@ class Player(pygame.sprite.Sprite):
             self.game.current_music = None
 
     def update(self, delta):
-        self.input()
-        self.move(delta)
+        if not self.game.countdown_active:
+            self.input()
+            self.move(delta)
+
         self.animate_engine()
         self.collision_rect.clamp_ip(pygame.Rect(0, TUNNEL_TOP, WINDOW_WIDTH, TUNNEL_BOTTOM - TUNNEL_TOP))
         self.rect.center = self.collision_rect.center
