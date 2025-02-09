@@ -15,7 +15,7 @@ class Player(pygame.sprite.Sprite):
             pygame.image.load('Images/Engine1.png').convert_alpha(),
             pygame.image.load('Images/Engine2.png').convert_alpha(),
             pygame.image.load('Images/Engine3.png').convert_alpha(),
-            pygame.image.load('Images/Engine2.png').convert_alpha(),  # For smooth loop back
+            pygame.image.load('Images/Engine2.png').convert_alpha(),
         ]
 
         engine_scale = (PLAYER_SIZE // 2, PLAYER_SIZE // 2)
